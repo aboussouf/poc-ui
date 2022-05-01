@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { useAppSelector, useAppDispatch } from "../../../hooks";
 import {
   decrement,
   increment,
@@ -8,15 +8,23 @@ import {
   incrementAsync,
   incrementIfOdd,
   selectCount,
-} from './counterSlice';
-import styles from './Counter.module.css';
+} from "./counterSlice";
+import styles from "./Counter.module.css";
 
 export function Counter() {
   const count = useAppSelector(selectCount);
   const dispatch = useAppDispatch();
-  const [incrementAmount, setIncrementAmount] = useState('2');
+  const [incrementAmount, setIncrementAmount] = useState("2");
+  const [flag, setFlag] = useState(false);
 
   const incrementValue = Number(incrementAmount) || 0;
+
+  function handleClick(c: string) {
+    // 1. Feature: Automatic Batching
+    setIncrementAmount((c) => c + 2); // Does not re-render yet
+    setFlag((f) => !f); // Does not re-render yet
+    // React will only re-render once at the end (that's batching!)
+  }
 
   return (
     <div>
@@ -28,7 +36,12 @@ export function Counter() {
         >
           -
         </button>
-        <span className={styles.value}>{count}</span>
+        <span
+          className={styles.value}
+          style={{ color: flag ? "blue" : "black" }}
+        >
+          {count}
+        </span>
         <button
           className={styles.button}
           aria-label="Increment value"
@@ -42,7 +55,7 @@ export function Counter() {
           className={styles.textbox}
           aria-label="Set increment amount"
           value={incrementAmount}
-          onChange={(e) => setIncrementAmount(e.target.value)}
+          onChange={(e) => handleClick(e.target.value)}
         />
         <button
           className={styles.button}
